@@ -7,12 +7,22 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body { background-color: #f8f9fa; padding: 20px; }
-        .receipt { width: 600px; margin: 20px auto; padding: 40px; border: 1px solid #ccc; background: white; }
+        .receipt { width: 600px; max-width: 100%; margin: 20px auto; padding: 40px; border: 1px solid #ccc; background: white; box-sizing: border-box; }
         .amount-box { border: 1px solid #333; padding: 10px; margin: 20px 0; font-size: 1.5rem; }
+        @page {
+            size: A4 portrait;
+            margin: 10mm;
+        }
         @media print {
+            html, body { margin: 0; padding: 0; }
             .no-print { display: none; }
             body { background: white; }
-            .receipt { border: none; margin: 0; }
+            .receipt { border: none; margin: 0; width: 100%; max-width: 100%; }
+        }
+        @media (max-width: 576px) {
+            body { padding: 10px; }
+            .receipt { padding: 20px; }
+            .amount-box { font-size: 1.2rem; }
         }
     </style>
 </head>
@@ -43,8 +53,8 @@
             <input type="text" id="inputRestaurant" class="form-control mb-2" placeholder="店舗名">
             <input type="text" id="inputTel" class="form-control mb-3" placeholder="電話番号">
             
-            <button class="btn btn-primary" onclick="generateReceipt()">表示する</button>
-            <button class="btn btn-secondary" onclick="window.print()">印刷する</button>
+            <button type="button" class="btn btn-primary" onclick="generateReceipt()">表示する</button>
+            <button type="button" class="btn btn-secondary" onclick="window.print()">印刷する（iPhone / OS）</button>
         </div>
     </div>
 </div>
@@ -84,6 +94,28 @@
         document.getElementById('displayRestaurant').innerText = document.getElementById('inputRestaurant').value || '店舗名';
         document.getElementById('displayTel').innerText = document.getElementById('inputTel').value;
     }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const today = new Date().toISOString().split('T')[0];
+        const fields = [
+            document.getElementById('inputDate'),
+            document.getElementById('inputName'),
+            document.getElementById('inputAmount'),
+            document.getElementById('inputReason'),
+            document.getElementById('inputRestaurant'),
+            document.getElementById('inputTel')
+        ];
+
+        document.getElementById('inputDate').value = today;
+        fields.forEach(function (field) {
+            if (field) {
+                field.addEventListener('input', generateReceipt);
+                field.addEventListener('change', generateReceipt);
+            }
+        });
+
+        generateReceipt();
+    });
 </script>
 
 </body>
